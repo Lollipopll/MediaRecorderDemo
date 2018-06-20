@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.View.OnClickListener
+import com.orhanobut.logger.Logger
 import com.wzx.mediarecorderdemo.utils.MediaHelper
 import com.wzx.mediarecorderdemo.utils.MeidaRecoderThread
 import kotlinx.android.synthetic.main.activity_main.*
@@ -77,7 +78,6 @@ class MainActivity : AppCompatActivity(), OnClickListener, EasyPermissions.Permi
     }
 
 
-
     /**
      * 截图
      */
@@ -100,7 +100,9 @@ class MainActivity : AppCompatActivity(), OnClickListener, EasyPermissions.Permi
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun stopRec() {
         rec.stopRecorder()
+        Logger.t("SCREEN_REC").e("停止录屏")
     }
+
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -111,7 +113,10 @@ class MainActivity : AppCompatActivity(), OnClickListener, EasyPermissions.Permi
                 mMediaProjection = mMediaProjectionManager.getMediaProjection(resultCode, data)
                 var bitmap = MediaHelper.getScreenShot(mMediaProjection, width, height, dpi)
                 /**使用let函数判断在不为null的情况下执行**/
-                bitmap?.let { iv_show.setImageBitmap(bitmap) }
+                bitmap?.let {
+                    iv_show.setImageBitmap(bitmap)
+                    Logger.t("SCREEN_SHOT").e("截图成功")
+                }
             }
 
             requestCode == REQUEST_SCREEN_REC_CODE && resultCode == Activity.RESULT_OK -> {
@@ -130,6 +135,7 @@ class MainActivity : AppCompatActivity(), OnClickListener, EasyPermissions.Permi
                 dpi = 1
                 rec = MeidaRecoderThread(width, height, dpi, mMediaProjection, filePath)
                 rec.start()
+                Logger.t("SCREEN_REC").e("开始录屏")
             }
 
         }
